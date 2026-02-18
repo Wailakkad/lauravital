@@ -432,20 +432,12 @@
             const timestamp = new Date().toLocaleString('ar-MA', { timeZone: 'Africa/Casablanca' });
 
             const newClient = {
-                id: Date.now(),
                 fullName,
                 phoneNumber,
                 city,
                 timestamp,
                 status: 'جديد'
             };
-
-            // Get existing clients or initialize empty array
-            let clients = JSON.parse(localStorage.getItem('clients') || '[]');
-            clients.unshift(newClient); // Add to the beginning
-
-            // Save back to localStorage
-            localStorage.setItem('clients', JSON.stringify(clients));
 
             // Feedback to user
             const submitBtn = e.target.querySelector('button');
@@ -454,22 +446,36 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="material-icons-round animate-spin">sync</span> جاري الإرسال...';
 
-            setTimeout(() => {
-                submitBtn.classList.remove('bg-black', 'hover:bg-zinc-800');
-                submitBtn.classList.add('bg-green-600');
-                submitBtn.innerHTML = '<span class="material-icons-round">check_circle</span> تم الطلب بنجاح';
-
-                // Reset form
-                e.target.reset();
-
-                // Redirect or reset button after 3 seconds
-                setTimeout(() => {
-                    submitBtn.classList.remove('bg-green-600');
-                    submitBtn.classList.add('bg-black', 'hover:bg-zinc-800');
-                    submitBtn.innerHTML = originalContent;
-                    submitBtn.disabled = false;
-                }, 3000);
-            }, 1000);
+            fetch('https://spaceseller.app.n8n.cloud/webhook-test/form-submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newClient),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        submitBtn.classList.remove('bg-black', 'hover:bg-zinc-800');
+                        submitBtn.classList.add('bg-green-600');
+                        submitBtn.innerHTML = '<span class="material-icons-round">check_circle</span> تم الطلب بنجاح';
+                        e.target.reset();
+                    } else {
+                        throw new Error('Network response was not ok');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    submitBtn.classList.add('bg-red-600');
+                    submitBtn.innerHTML = '<span class="material-icons-round">error</span> حدث خطأ، حاول ثانية';
+                })
+                .finally(() => {
+                    setTimeout(() => {
+                        submitBtn.classList.remove('bg-green-600', 'bg-red-600');
+                        submitBtn.classList.add('bg-black', 'hover:bg-zinc-800');
+                        submitBtn.innerHTML = originalContent;
+                        submitBtn.disabled = false;
+                    }, 4000);
+                });
         });
     </script>
 

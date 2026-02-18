@@ -186,9 +186,21 @@
 
         // Leads Management
         function loadLeads() {
-            allLeads = JSON.parse(localStorage.getItem('clients') || '[]');
-            renderLeads(allLeads);
-            updateStats();
+            const tbody = document.getElementById('leadsTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" class="p-12 text-center text-zinc-500 font-bold">جاري تحميل البيانات...</td></tr>';
+
+            fetch('https://spaceseller.app.n8n.cloud/webhook-test/get-data')
+                .then(response => response.json())
+                .then(data => {
+                    // n8n might return the array directly or wrapped in an object
+                    allLeads = Array.isArray(data) ? data : (data.leads || []);
+                    renderLeads(allLeads);
+                    updateStats();
+                })
+                .catch(error => {
+                    console.error('Error fetching leads:', error);
+                    tbody.innerHTML = '<tr><td colspan="6" class="p-12 text-center text-red-500 font-bold">حدث خطأ أثناء تحميل البيانات</td></tr>';
+                });
         }
 
         function renderLeads(leads) {
