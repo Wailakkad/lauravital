@@ -189,7 +189,7 @@
             const tbody = document.getElementById('leadsTableBody');
             tbody.innerHTML = '<tr><td colspan="6" class="p-12 text-center text-zinc-500 font-bold">جاري تحميل البيانات...</td></tr>';
 
-            fetch('https://spaceseller.app.n8n.cloud/webhook-test/get-data')
+            fetch('https://spaceseller.app.n8n.cloud/webhook/get-data')
                 .then(response => response.json())
                 .then(data => {
                     // n8n might return the array directly or wrapped in an object
