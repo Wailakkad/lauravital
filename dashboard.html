@@ -237,15 +237,16 @@
         function updateStats() {
             document.getElementById('totalLeads').innerText = allLeads.length;
             const today = new Date().toLocaleDateString('ar-MA', { timeZone: 'Africa/Casablanca' });
-            const todayCount = allLeads.filter(l => l.timestamp.includes(today)).length;
+            const todayCount = allLeads.filter(l => (l.timestamp || '').includes(today)).length;
             document.getElementById('todayLeads').innerText = todayCount;
         }
 
         function filterLeads(query) {
+            const q = query.toLowerCase();
             const filtered = allLeads.filter(l =>
-                l.fullName.toLowerCase().includes(query.toLowerCase()) ||
-                l.phoneNumber.includes(query) ||
-                l.city.toLowerCase().includes(query.toLowerCase())
+                (l.fullName || '').toLowerCase().includes(q) ||
+                (l.phoneNumber || '').includes(q) ||
+                (l.city || '').toLowerCase().includes(q)
             );
             renderLeads(filtered);
         }
