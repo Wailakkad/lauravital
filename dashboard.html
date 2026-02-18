@@ -216,17 +216,17 @@
             emptyState.classList.add('hidden');
             tbody.innerHTML = leads.map(lead => `
                 <tr class="border-b border-white/5 hover:bg-white/[0.02] transition-colors group">
-                    <td class="p-6 text-zinc-400 text-sm font-medium">${lead.timestamp}</td>
-                    <td class="p-6 font-black text-white">${lead.fullName}</td>
-                    <td class="p-6 text-zinc-300 font-mono tracking-wider">${lead.phoneNumber}</td>
-                    <td class="p-6 text-zinc-400 font-bold">${lead.city}</td>
+                    <td class="p-6 text-zinc-400 text-sm font-medium">${lead.timestamp || '—'}</td>
+                    <td class="p-6 font-black text-white">${lead.name || lead.fullName || '—'}</td>
+                    <td class="p-6 text-zinc-300 font-mono tracking-wider">${lead.phone || lead.phoneNumber || '—'}</td>
+                    <td class="p-6 text-zinc-400 font-bold">${lead.city || '—'}</td>
                     <td class="p-6">
-                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${lead.status === 'جديد' ? 'bg-zinc-800 text-zinc-400' : 'bg-green-900/20 text-green-500'}">
-                            ${lead.status}
+                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${(lead.status || 'جديد') === 'جديد' ? 'bg-zinc-800 text-zinc-400' : 'bg-green-900/20 text-green-500'}">
+                            ${lead.status || 'جديد'}
                         </span>
                     </td>
                     <td class="p-6 text-left">
-                        <button onclick="toggleStatus(${lead.id})" class="text-zinc-600 hover:text-white transition-all">
+                        <button onclick="toggleStatus(${lead.id || lead.row_number})" class="text-zinc-600 hover:text-white transition-all">
                             <span class="material-icons-round text-xl">done_all</span>
                         </button>
                     </td>
@@ -244,8 +244,8 @@
         function filterLeads(query) {
             const q = query.toLowerCase();
             const filtered = allLeads.filter(l =>
-                (l.fullName || '').toLowerCase().includes(q) ||
-                (l.phoneNumber || '').includes(q) ||
+                (l.name || l.fullName || '').toLowerCase().includes(q) ||
+                (String(l.phone || l.phoneNumber || '')).includes(q) ||
                 (l.city || '').toLowerCase().includes(q)
             );
             renderLeads(filtered);
